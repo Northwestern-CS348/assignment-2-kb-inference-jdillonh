@@ -120,6 +120,7 @@ class KnowledgeBase(object):
         printv("Retracting {!r}", 0, verbose, [fact])
         ####################################################
         # Student code goes here
+
         if not isinstance(fact, Fact):
             print("tried to retract a non-fact")
             if isinstance(fact, Rule):
@@ -170,9 +171,8 @@ class KnowledgeBase(object):
                     kb.rules.remove(fact) 
             except:
                 print("removed a rule that wasn't in the kb")
-                pass
 
-        if fact.asserted and len(fact.supported_by) == 0:
+        if len(fact.supported_by) == 0:
             recRem(fact, self)
 
 class InferenceEngine(object):
@@ -194,7 +194,6 @@ class InferenceEngine(object):
                "not a fact or rule! Bad arguments.")
         assert(len(rule.lhs) > 0,
                "No LHS on this Rule!!")
-
 
         binds = match(fact.statement, rule.lhs[0])
         if not binds: return #nothing we can synthesize
