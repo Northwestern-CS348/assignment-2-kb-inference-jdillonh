@@ -17,7 +17,6 @@ class Fact(object):
     """
     def __init__(self, statement, supported_by=[]):
         """Constructor for Fact setting up useful flags and generating appropriate statement
-
         Args:
             statement (str|Statement): The statement of this fact, basically what the
                 fact actually says
@@ -78,7 +77,6 @@ class Rule(object):
         containing the statements that need to be in our KB for us to infer the
         RHS statement. Also has fields tracking which facts/rules in the KB it
         supports and is supported by.
-
     Attributes:
         name (str): 'rule', the name of this class
         lhs (listof Statement): LHS statements of this rule
@@ -92,7 +90,6 @@ class Rule(object):
     """
     def __init__(self, rule, supported_by=[]):
         """Constructor for Rule setting up useful flags and generating appropriate LHS & RHS
-
         Args:
             rule (listof list): Raw representation of statements making up LHS and
                 RHS of this rule

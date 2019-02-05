@@ -1,5 +1,3 @@
-this is a test...
-
 # Assignment 2: Knowledge Base: Rules
 
 In this lab assignment, you are going to extend a knowledge base (KB) and an inference engine. The knowledge base supports three main interfaces: `Assert`, `Retract`, and `Ask`. 
@@ -8,23 +6,7 @@ In this lab assignment, you are going to extend a knowledge base (KB) and an inf
 - `Ask`: ask queries and return a list of bindings for facts.
 - `Retract`: remove asserted facts from the knowledge base. Also, remove all other facts or rules that are dependent on the removed fact or rule.
 
-The end result of this assignment is a KB that can be used to model a world/game/thing with a static set of rules. Most board games and established businesses (during a short period of time) fell into this category. In this type of KB, asserted rules should be treated as laws, laying the foundation of the game/business logic; they are unquestionable and therefore must never be removed from the KB. Asserted facts could be treated as factual observations about the state of the world/game/thing, situations which hold until they cease to be valid -- when they are retracted by us, the users. Inferred facts and rules should be thought of as hypotheses: things you write on a scratch paper when solving a problem. They should be generated when there are enough supporting evidences and removed as soon as *any* supporting evidence is retracted. 
-
-## Starter code
-
-We provide you five files with code: `main.py`, `logical_classes.py`, `read.py`, `util.py` and `student_code.py`. (Details about these files are described at the end of this write-up.)
-
-- `main.py` contains code for testing the KnowledgeBase
-- `student_code.py` contains the `KnowledgeBase` and `InferenceEngine` classes, and is where you will be writing code.
-- `logical_classes.py` contains classes for each type of logical component, e.g. `Fact`, `Rule`, etc.
-- `util.py` contains several useful helper functions
-- `read.py` contains functions that read statements from files or terminal. (You won't need to read/explore this file.)
-
-There are also two data files: `statements_kb.txt` and `statements_kb2.txt`.  These files contain the facts and rules to be inserted into the KB. The provided tests use `statements_kb2.txt`, and you may use `statements_kb.txt` to generate your own tests.
-
-## Your task
-
-To get you started, the `Assert` and `Ask` interfaces have been written - exposed via the `KnowledgeBase.kb_assert` and `KnowledgeBase.kb_ask` methods.
+The end result of this assignment is a KB that can be used to model a world/game/thing with a static the `KnowledgeBase.kb_assert` and `KnowledgeBase.kb_ask` methods.
 
 Your task is two-part:
 
