@@ -94,7 +94,7 @@ class KnowledgeBase(object):
         Returns:
             listof Bindings|False - list of Bindings if result found, False otherwise
         """
-        print("Asking {!r}".format(fact))
+        #print("Asking {!r}".format(fact))
         if factq(fact):
             f = Fact(fact.statement)
             bindings_lst = ListOfBindings()
@@ -107,7 +107,6 @@ class KnowledgeBase(object):
             return bindings_lst if bindings_lst.list_of_bindings else []
 
         else:
-            print("Invalid ask:", fact.statement)
             return []
 
     def kb_retract(self, fact):
@@ -121,59 +120,46 @@ class KnowledgeBase(object):
         ####################################################
         # Student code goes here
 
+        fact = self._get_fact(fact)
         if not isinstance(fact, Fact):
-            print("tried to retract a non-fact")
-            if isinstance(fact, Rule):
-                print("this is a rule, forget about it!")
-                return #piazza says this is right
+            return
 
         #Therefore, when you retract a fact, it would be both supported and
         #asserted.
         #When that happen, you toggle the "asserted" flag and leave it be.
+        #If it's not asserted but supported, you do nothing.
         #  - Zaohao She
-        if (len(fact.supported_by) > 1
-            and fact.asserted):
+        if (len(fact.supported_by) >= 1 and fact.asserted):
             fact.asserted = False
             return
-        #If it's not asserted but supported, you do nothing.
-        if not fact.asserted and len(fact.supported_by) >= 1:
-            return
-        #If it's only asserted, you
-        #remove its support from all rules / facts involved,
-        #and recursively remove those fact / rule that are not asserted
-        #and no longer contains any valid support, and remove the
-        #fact from the KB itself.
-        def recRem(fact, kb): #really fact OR RULE
-            """[helper] 
-            recursively remove fact, and remove 
-            all facts/rules that are no longer supported
-            """
-            for f in fact.supports_facts:
-                f.supported_by = (
-                    [t for t in f.supported_by if fact not in t])
-                if not f.asserted and len(f.supported_by) == 0:
-                    recRem(f, kb)
+        if len(fact.supported_by) == 0 and fact.asserted:
+            print("removing fact recursively", fact.supported_by)
+            self.recRem(fact)
 
-            for r in fact.supports_rules:
-                r.supported_by = (
-                    [t for t in r.supported_by if fact not in t])
-                if not r.asserted and len(r.supported_by) == 0:
-                    recRem(r, kb)
+    def recRem(self, fact): #really fact OR RULE
+        """[helper] 
+        recursively remove fact, and remove 
+        all facts/rules that are no longer supported
+        """
+        for f in fact.supports_facts:
+            f.supported_by = [t for t in f.supported_by if fact not in t]
+            if not f.asserted and len(f.supported_by) == 0:
+                self.recRem(f)
 
-            #remove fact from kb
-            try:
-                if isinstance(fact, Fact):
-                    kb.facts.remove(fact)
-            except:
-                print("removed a fact that wasn't in the kb")
-            try:
-                if isinstance(fact, Rule):
-                    kb.rules.remove(fact) 
-            except:
-                print("removed a rule that wasn't in the kb")
+        for r in fact.supports_rules:
+            r.supported_by = [t for t in r.supported_by if fact not in t]
+            if not r.asserted and len(r.supported_by) == 0:
+                self.recRem(r)
 
-        if len(fact.supported_by) == 0:
-            recRem(fact, self)
+        #remove fact from kb
+        print("Checking if fact is in self.facts")
+        if isinstance(fact, Fact):
+            print("Actually Removing ")
+            self.facts.remove(fact)
+        if isinstance(fact, Rule):
+            print("Actually Removing ")
+            self.rules.remove(fact)
+
 
 class InferenceEngine(object):
     def fc_infer(self, fact, rule, kb):
@@ -190,28 +176,28 @@ class InferenceEngine(object):
         ####################################################
         # Student code goes here
 
-        assert((not isinstance(fact, Fact) and not isinstance(rule, Rule)),
-               "not a fact or rule! Bad arguments.")
-        assert(len(rule.lhs) > 0,
-               "No LHS on this Rule!!")
-
         binds = match(fact.statement, rule.lhs[0])
-        if not binds: return #nothing we can synthesize
+        if binds == False:
+            return #nothing we can synthesize
         newRHS = instantiate(rule.rhs, binds)
 
         if len(rule.lhs) == 1:
-            newFact = Fact(newRHS, [rule, fact])
-            fact.supports_facts += [newFact]
-            rule.supports_facts += [newFact]
+            newFact = Fact(newRHS)
+            newFact.asserted = False
+            newFact.supported_by.append([fact, rule])
+            fact.supports_facts.append(newFact)
+            rule.supports_facts.append(newFact)
             kb.kb_add(newFact)
             #assert(len(newFact.supported_by) == 2)
             
         elif len(rule.lhs) > 1:
-            newLHS = [instantiate(st, binds)
-                      for st in rule.lhs[1:]]
-            newRule = Rule([newLHS, newRHS],[(fact, rule)])
-            fact.supports_rules += [newRule]
-            rule.supports_rules += [newRule]
+            newLHS = [instantiate(st, binds) for st in rule.lhs[1:]]
+                      
+            newRule = Rule([newLHS, newRHS])
+            newRule.asserted = False
+            newRule.supported_by.append([fact, rule])
+            fact.supports_rules.append(newRule)
+            rule.supports_rules.append(newRule)
             kb.kb_add(newRule)
             #assert(len(newRule.supported_by) == 2)
 
