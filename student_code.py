@@ -160,10 +160,17 @@ class KnowledgeBase(object):
                     recRem(r, kb)
 
             #remove fact from kb
-            if isinstance(fact, Fact):
-                kb.facts.remove(fact)
-            if isinstance(fact, Rule):
-                kb.rules.remove(fact) 
+            try:
+                if isinstance(fact, Fact):
+                    kb.facts.remove(fact)
+            except:
+                print("removed a fact that wasn't in the kb")
+            try:
+                if isinstance(fact, Rule):
+                    kb.rules.remove(fact) 
+            except:
+                print("removed a rule that wasn't in the kb")
+                pass
 
         if fact.asserted and len(fact.supported_by) == 0:
             recRem(fact, self)
